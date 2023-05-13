@@ -38,6 +38,24 @@ void breakout::draw() {
         // To be implemented (A3)
         board my_board = *boards[0];
         my_board.draw();
+        ball my_ball;
+        my_ball.position(my_board.x, my_board.y-10);
+        my_ball.draw();
+        cout << my_ball.y << ' ' << my_board.y << endl;
+        if(key_pressed['a']){
+            my_board.move_left(10);
+            if (my_board.x < 0){
+                my_board.x = 0 + my_board.w/2;
+            }
+            boards[0]->x = my_board.x;
+        }
+        else if(key_pressed['d']){
+            my_board.move_right(10);
+            if (my_board.x > width){
+                my_board.x = width - my_board.w/2;
+            }
+            boards[0]->x = my_board.x;
+        }
 
     }
     // To be implemented (A4)
@@ -50,11 +68,10 @@ void breakout::tick(int time_diff) {
     if (key_pressed[ESC_KEY]){
         quit_gui();
     }
+    // To be implemented (A3)
     if (key_pressed[' ']){
         state = WAIT;
     }
-    // To be implemented (A3)
-
     // To be implemented (A4)
     // To be implemented (A5)
 }
@@ -71,6 +88,8 @@ void ball::direction(float dirx, float diry) {
 
 void ball::draw() {
     // To be implemented (A4)
+    cairo_set_source_rgb (cr, 1, 1, 1);
+    cairo_arc (cr, x, y, 0.3, 0., 2 * M_PI);
 }
 
 void ball::use_random_start_dir(float scale_x, float scale_y) {
@@ -97,10 +116,12 @@ void board::draw() {
 
 void board::move_left(float by) {
     // To be implemented (A3)
+        this->x = x - by;
 }
 
 void board::move_right(float by) {
     // To be implemented (A3)
+    this->x = x + by;
 }
 
 void board::bounce(ball &ball) {
