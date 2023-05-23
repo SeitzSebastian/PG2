@@ -25,6 +25,7 @@ struct block {
 struct ball {
 	float x, y, rad = 0.3;
 	float dx, dy, speed = 1;
+    ball(float x, float y, float rad) : x(x), y(y), rad(rad), dx(0), dy(0){};
 	void position(float posx, float posy);
 	void direction(float dirx, float diry);
 	void use_random_start_dir(float scale_x, float scale_y);

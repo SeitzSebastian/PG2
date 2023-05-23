@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-	breakout game(800, 1000);
+	breakout game(600, 800);
 	game.run();
 	return 0;
 }

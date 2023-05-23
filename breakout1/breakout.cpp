@@ -19,6 +19,7 @@ breakout::breakout(int w, int h)
     // To be implemented (A3)
     boards.push_back(new board(width/2,height-50,50,50));
     // To be implemented (A4)
+    balls.push_back(ball(width/2, height-65, 20));
 }
 
 void breakout::draw() {
@@ -36,29 +37,18 @@ void breakout::draw() {
 
     if (state == WAIT){
         // To be implemented (A3)
-        board my_board = *boards[0];
+        board &my_board = *boards[0];
         my_board.draw();
-        ball my_ball;
-        my_ball.position(my_board.x, my_board.y-10);
+        ball &my_ball = balls[0];
         my_ball.draw();
-        cout << my_ball.y << ' ' << my_board.y << endl;
-        if(key_pressed['a']){
-            my_board.move_left(10);
-            if (my_board.x < 0){
-                my_board.x = 0 + my_board.w/2;
-            }
-            boards[0]->x = my_board.x;
-        }
-        else if(key_pressed['d']){
-            my_board.move_right(10);
-            if (my_board.x > width){
-                my_board.x = width - my_board.w/2;
-            }
-            boards[0]->x = my_board.x;
-        }
-
     }
     // To be implemented (A4)
+    if (state == PLAY){
+        board &my_board = *boards[0];
+        my_board.draw();
+        ball &my_ball = balls[0];
+        my_ball.draw();
+    }
     // To be implemented (A5)
 
 }
@@ -72,6 +62,26 @@ void breakout::tick(int time_diff) {
     if (key_pressed[' ']){
         state = WAIT;
     }
+    if(key_pressed[' '] && state == WAIT){
+        state = PLAY;
+    }
+    board &my_board = *boards[0];
+    ball &my_ball = balls[0];
+    if(key_pressed['a']){
+        my_board.move_left(10);
+        if (my_board.x < 0){
+            my_board.x = 0 + my_board.w/2;
+        }
+        boards[0]->x = my_board.x;
+    }
+    else if(key_pressed['d']){
+        my_board.move_right(10);
+        if (my_board.x > width){
+            my_board.x = width - my_board.w/2;
+        }
+        boards[0]->x = my_board.x;
+    }
+
     // To be implemented (A4)
     // To be implemented (A5)
 }
@@ -84,20 +94,28 @@ void ball::position(float posx, float posy) {
 
 void ball::direction(float dirx, float diry) {
     // To be implemented (A4)
+    dx = dirx;
+    dy = diry;
 }
 
 void ball::draw() {
     // To be implemented (A4)
     cairo_set_source_rgb (cr, 1, 1, 1);
-    cairo_arc (cr, x, y, 0.3, 0., 2 * M_PI);
+    cairo_arc (cr, x, y, 10, 0., 2 * M_PI);
+    cairo_fill(cr);
 }
 
 void ball::use_random_start_dir(float scale_x, float scale_y) {
     // To be implemented (A4)
+    dx = random_number();
+    dy = random_number();
 }
 
 void ball::step(float gamespeed) {
     // To be implemented (A4)
+    x = x+dx;
+    y = y+dy;
+
 }
 
 void ball::collision(const block &b, breakout *game, collistion_type type) {
