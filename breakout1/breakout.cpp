@@ -50,6 +50,19 @@ void breakout::draw() {
         my_ball.draw();
     }
     // To be implemented (A5)
+    if (state == GAMEOVER){
+        string line1 = "GAMEOVER";
+        string line2 = "PRESS SPACE TO PLAY AGAIN";
+        cairo_text_extents_t extents;
+        cairo_set_font_size(cr,20);
+        cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+        cairo_text_extents (cr, line1.c_str(), &extents);
+        cairo_move_to(cr,width/2-extents.width/2, height/2-extents.height/1);
+        cairo_show_text(cr,line1.c_str());
+        cairo_text_extents (cr, line2.c_str(), &extents);
+        cairo_move_to(cr,width/2-extents.width/2, height/2-extents.height/1 + 30 );
+        cairo_show_text(cr,line2.c_str());
+    }
 
 }
 
@@ -59,10 +72,10 @@ void breakout::tick(int time_diff) {
         quit_gui();
     }
     // To be implemented (A3)
-    if (key_pressed[' ']){
+    if ((key_pressed[' '] && state ==INIT) || (state == GAMEOVER && key_pressed[' '])){
         state = WAIT;
     }
-    if(key_pressed[' '] && state == WAIT){
+    if(key_pressed['s'] && state == WAIT){
         state = PLAY;
     }
     board &my_board = *boards[0];
@@ -81,9 +94,42 @@ void breakout::tick(int time_diff) {
         }
         boards[0]->x = my_board.x;
     }
-
+    if(state==WAIT) {
+        if (key_pressed['a'] || key_pressed['d']) {
+            my_ball.x = my_board.x;
+        }
+    }
     // To be implemented (A4)
+
+    if(state==PLAY) {
+        if (my_ball.dx == 0 && my_ball.dy == 0) {
+            my_ball.direction(0, -100);
+            }
+        my_ball.step(1);
+        if (my_ball.y >= height+22){
+            lives -= 1;
+            if(lives > 0) {
+                state = WAIT;
+                my_ball.x = my_board.x;
+                my_ball.y = my_board.y - 20;
+                my_ball.dx = 0;
+                my_ball.dy = 0;
+                cout << state;
+            }
+            else if(lives == 0){
+                state = GAMEOVER;
+            }
+        }
+    }
     // To be implemented (A5)
+
+    if(state == GAMEOVER){
+        my_ball.x = my_board.x;
+        my_ball.y = my_board.y - 20;
+        my_ball.dx = 0;
+        my_ball.dy = 0;
+        lives = 3;
+    }
 }
 
 // ball
@@ -107,18 +153,37 @@ void ball::draw() {
 
 void ball::use_random_start_dir(float scale_x, float scale_y) {
     // To be implemented (A4)
-    dx = random_number();
-    dy = random_number();
+    dx = scale_x*random_number();
+    dy = scale_y*random_number();
 }
 
 void ball::step(float gamespeed) {
     // To be implemented (A4)
+    if((x <= 0 && y <= 0)||(x >= 600 && y <= 0)){
+        dy = -dy;
+        dx = -dx;
+    }
+    else if ( x <= 0 || x >= 600){
+        dx = -dx;
+    }
+    else if (y <= 0){
+        dy = -dy;
+    }
     x = x+dx;
     y = y+dy;
-
 }
 
 void ball::collision(const block &b, breakout *game, collistion_type type) {
+    if(type == BOTH){
+        dy = -dy;
+        dx = -dx;
+    }
+    else if(type == VERT){
+        dx = -dx;
+    }
+    else if(type == HORI){
+        dy = -dy;
+    }
 }
 
 // board
