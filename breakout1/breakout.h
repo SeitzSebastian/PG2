@@ -16,6 +16,8 @@ struct color {
 
 struct block {
 	int x, y;
+    int w = 100;
+    int h = 40;
 	color col;
 	block(int x, int y, color col) : x(x), y(y), col(col) {}
 	virtual void draw();
@@ -23,7 +25,7 @@ struct block {
 };
 
 struct ball {
-	float x, y, rad = 0.3;
+	float x, y, rad = 10;
 	float dx, dy, speed = 1;
     ball(float x, float y, float rad) : x(x), y(y), rad(rad), dx(0), dy(0){};
 	void position(float posx, float posy);
@@ -48,19 +50,22 @@ struct board {
 };
 
 class breakout : public windowed_app {
-	enum game_state { INIT, PLAY, WAIT, GAMEOVER };
+	enum game_state { INIT, PLAY, WAIT, GAMEOVER, PAUSE};
 	game_state state = INIT;
 	int cells_x = 0, cells_y = 0, block_border_y = 0;
 	std::vector<block*> blocks;
-	
+
 	// There could be multiple boards and balls -- that's the reason why a std::vector is used here.
-	// If you intend to use one ball and/or board in your app you can use balls/boards.front() in your implementation. 
+	// If you intend to use one ball and/or board in your app you can use balls/boards.front() in your implementation.
 	std::vector<ball> balls;
 	std::vector<board*> boards;
 	float game_speed = 0.010;
 	int lives = 3;
+    int score = 0;
+    int level = 0;
 public:
 	breakout(int w, int h);
 	void draw() override;
 	void tick(int time_diff) override;
+    void createBlocks();
 };
